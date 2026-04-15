@@ -10,13 +10,13 @@ namespace StudentManagementSystem.Models
         public string Grade { get; set; }
         public string Email { get; set; }
 
-        public Student(int Id, string Name, int Age, string Grade, string Email )
+        public Student(int Id, string Name, int Age, string Grade, string Email)
         {
             this.Id = Id;
             this.Name = Name;
             this.Age = Age;
             this.Grade = Grade;
-            this.Email = Email; 
+            this.Email = Email;
         }
 
         public override string ToString()

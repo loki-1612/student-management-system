@@ -73,7 +73,7 @@ namespace StudentManagementSystem
 
                         case 4:
 
-                            int updateId = ReadInt("Enter Id to update: ");
+                            int updateId = GetValidStudentId(repo);
 
                             string newName = ReadString("New Name: ");
 
@@ -91,7 +91,7 @@ namespace StudentManagementSystem
 
                         case 5:
 
-                            int deleteId = GetValidStudentId(repo);
+                            int deleteId = ReadInt("Enter ID to delete: ");
 
                             var student = repo.GetStudentById(deleteId);
                             if(student != null)
@@ -218,16 +218,51 @@ namespace StudentManagementSystem
         //Display students
         public static void DisplayStudents(List<Student> students)
         {
-            Console.WriteLine("\n| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
-                                "ID", "Name", "Age", "Grade", "Email");
-
-            Console.WriteLine(new string('-', 64));
-
-            foreach (var stu in students)
+            if (students.Count == 0)
             {
-                Console.WriteLine("| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
-                    stu.Id, stu.Name, stu.Age, stu.Grade, stu.Email);
+                Console.WriteLine("No students found.");
+                return;
             }
+
+            // Header
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("--------------------------------------------------------");
+            Console.WriteLine("| ID   | Name       | Age | Grade | Email              |");
+            Console.WriteLine("--------------------------------------------------------");
+            Console.ResetColor();
+
+            foreach (var s in students)
+            {
+                // Color based on Grade
+                switch (s.Grade.ToUpper())
+                {
+                    case "A":
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        break;
+                    case "B":
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        break;
+                    case "C":
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    default:
+                        Console.ResetColor();
+                        break;
+                }
+
+                Console.WriteLine(
+                    $"| {s.Id,-4} | {s.Name,-10} | {s.Age,-3} | {s.Grade,-5} | {s.Email,-18} |"
+                );
+
+                Console.ResetColor();
+            }
+
+            Console.WriteLine("--------------------------------------------------------");
+
+            // Student Count
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"Total Students: {students.Count}");
+            Console.ResetColor();
         }
 
         //Valid Grade

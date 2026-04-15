@@ -138,6 +138,17 @@ namespace StudentManagementSystem.Repository
             return students.Where(s => s.Grade.ToUpper() == grade.ToUpper()).ToList();
         }
 
+        //Duplicate Id Check
+        public bool StudentExists(int id)
+        {
+            foreach (var student in students)
+            {
+                if (student.Id == id)
+                    return true;
+            }
+            return false;
+        }
+
         //Export to csv
         public void ExportToCsv(string filePath)
         {

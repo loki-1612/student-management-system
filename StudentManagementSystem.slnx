@@ -1,3 +1,12 @@
 <Solution>
+  <Folder Name="/Models/">
+    <File Path="Student.cs" />
+  </Folder>
+  <Folder Name="/Repository/">
+    <File Path="StudentRepository.cs" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="StudentManagementSystem.csproj" />
 </Solution>

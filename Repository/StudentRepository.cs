@@ -138,6 +138,19 @@ namespace StudentManagementSystem.Repository
             return students.Where(s => s.Grade.ToUpper() == grade.ToUpper()).ToList();
         }
 
+        //Export to csv
+        public void ExportToCsv(string filePath)
+        {
+            using(StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("Id, Name, Age, Grade, Email");
+                foreach(var s in students)
+                {
+                    writer.WriteLine($"{s.Id},{s.Name},{s.Age},{s.Grade},{s.Email}");
+                }
+            }
+        }
+
         
     }
 }

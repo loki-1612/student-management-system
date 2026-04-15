@@ -22,7 +22,8 @@ namespace StudentManagementSystem
                 Console.WriteLine("7. Sort by Name");
                 Console.WriteLine("8. Sort by Age");
                 Console.WriteLine("9. Filter by Grade");
-                Console.WriteLine("10. Exit");
+                Console.WriteLine("10. Export to CSV");
+                Console.WriteLine("11. Exit");
                 Console.WriteLine("Enter your choice: ");
 
                 if (! int.TryParse(Console.ReadLine(), out int choice))
@@ -156,6 +157,12 @@ namespace StudentManagementSystem
                             break;
 
                         case 10:
+                            string path = "students.csv";
+                            repo.ExportToCsv(path);
+                            Console.WriteLine("Data exported to students.csv");
+                            break;
+
+                        case 11:
                             Console.WriteLine("Exiting...");
                             return;
 

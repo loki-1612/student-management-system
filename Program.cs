@@ -39,15 +39,16 @@ namespace StudentManagementSystem
                     {
                         case 1:
 
-                            int id = ReadInt("Enter Id: ");
+                            int id = GetValidStudentId(repo);
+                            if (id == -1) return;
 
                             string name = ReadString("Enter Name: ");
 
-                            int age = ReadInt("Enter Age: ");
+                            int age = GetValidAge();
 
-                            string grade = ReadGrade("Enter Grade (A/B/C): ");
-                          
-                            string email = ReadString("Enter Email: ");
+                            string grade = GetValidGrade("Enter Grade (A/B/C): ");
+
+                            string email = GetValidEmail();
 
                             repo.AddStudent(new Student(id, name, age, grade, email));
 
@@ -76,11 +77,11 @@ namespace StudentManagementSystem
 
                             string newName = ReadString("New Name: ");
 
-                            int newAge = ReadInt("New Age: ");
+                            int newAge = GetValidAge();
 
-                            string newGrade = ReadGrade("Enter Grade (A/B/C): ");
+                            string newGrade = GetValidGrade("Enter Grade (A/B/C): ");
 
-                            string newEmail = ReadString("New Email: ");
+                            string newEmail = GetValidEmail();
 
                             bool updated = repo.UpdateStudent(updateId, newName, newAge, newEmail, newGrade);
 
@@ -90,15 +91,15 @@ namespace StudentManagementSystem
 
                         case 5:
 
-                            int deleteId = ReadInt("Enter ID to delete: ");
+                            int deleteId = GetValidStudentId(repo);
 
                             var student = repo.GetStudentById(deleteId);
                             if(student != null)
                             {
                                 Console.WriteLine("Are you sure you want to delete? (Y/N): ");
-                                string confirm = Console.ReadLine();
+                                string ?confirm = Console.ReadLine();
 
-                                if (confirm.ToUpper() == "Y")
+                                if (confirm?.ToUpper() == "Y")
                                 {
                                     repo.DeleteStudent(deleteId);
                                     Console.WriteLine("Student deleted successfully.");
@@ -143,7 +144,7 @@ namespace StudentManagementSystem
 
                         case 9:
                            
-                            string Grade = ReadGrade("Enter Grade (A/B/C): ");
+                            string Grade = GetValidGrade("Enter Grade (A/B/C): ");
 
                             var filtered = repo.GetStudentByGrade(Grade);
                             if(filtered.Count == 0)
@@ -214,19 +215,6 @@ namespace StudentManagementSystem
             }
         }
 
-        //Helper method : Read Grade
-        public static string ReadGrade(string prompt)
-        {
-            while (true)
-            {
-                Console.WriteLine(prompt);
-                string grade = Console.ReadLine().ToUpper().Trim();
-                if (grade == "A" || grade == "B" || grade == "C")
-                    return grade;
-                Console.WriteLine("Invalid grade! Please enter A, B, or C only.");
-            }
-        }
-
         //Display students
         public static void DisplayStudents(List<Student> students)
         {
@@ -241,7 +229,85 @@ namespace StudentManagementSystem
                     stu.Id, stu.Name, stu.Age, stu.Grade, stu.Email);
             }
         }
-        
+
+        //Valid Grade
+        public static string GetValidGrade(string prompt)
+        {
+            while (true)
+            {
+                Console.WriteLine(prompt);
+                string grade = Console.ReadLine().ToUpper().Trim();
+
+                if (grade == "A" || grade == "B" || grade == "C")
+                    return grade;
+                Console.WriteLine("Invalid grade! Please enter A, B, or C only.");
+            }
+        }
+
+        //Validation Id
+        public static int GetValidStudentId(StudentRepository repo)
+        {
+            while (true)
+            {
+                Console.Write("Enter Id: ");
+                if (!int.TryParse(Console.ReadLine(), out int id))
+                {
+                    Console.WriteLine("Invalid number. Try again.");
+                    continue;
+                }
+                if (repo.StudentExists(id))
+                {
+                    Console.WriteLine("Id already exists. Try different ID.");
+                }
+                return id;
+       
+            }
+        }
+
+
+        //validation Age
+        public static int GetValidAge()
+        {
+            while (true)
+            {
+                Console.Write("Enter Age: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int age))
+                {
+                    Console.WriteLine("Invalid number. Try again.");
+                    continue;
+                }
+
+                // validation 
+                if (age >= 12 && age <= 25)
+                {
+                    return age;
+                }
+
+                Console.WriteLine("Age must be between 12 and 25.");
+            }
+        }
+
+        //validation Email
+        public static string GetValidEmail()
+        {
+            while (true)
+            {
+                Console.Write("Enter Email: ");
+                string email = Console.ReadLine();
+
+                // regex validation 
+                string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+
+                if (System.Text.RegularExpressions.Regex.IsMatch(email, pattern))
+                {
+                    return email;
+                }
+
+                Console.WriteLine("❌ Invalid email format. Try again.");
+            }
+        }
+
 
         //Pause Screen
         static void Pause()

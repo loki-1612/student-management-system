@@ -119,7 +119,7 @@ namespace StudentManagementSystem
             int value;
             while(true)
             {
-                Console.WriteLine(message);
+                Console.Write(message);
                 if (int.TryParse(Console.ReadLine(), out value))
                 {
                     return value;

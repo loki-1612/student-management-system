@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using StudentManagementSystem.Models;
 
 
@@ -9,16 +10,27 @@ namespace StudentManagementSystem.Repository
     {
         private List<Student> students = new List<Student>();
 
+        private string FilePath = "students.tsx";
+
+        public StudentRepository()
+        {
+            LoadFromFile();
+        }
+
+        //Add Student
         public void AddStudent(Student student)
         {
             students.Add(student);
+            SaveToFile();
         }
 
+        //Get All
         public List<Student> GetAllStudents()
         {
             return students;
         }
 
+        //Find by Id
         public Student GetStudentById(int id)
         {
             foreach (var student in students)
@@ -40,6 +52,7 @@ namespace StudentManagementSystem.Repository
                 student.Age = age;
                 student.Email = email;
                 student.Grade = grade;
+                SaveToFile();
                 return true;
             }
             return false;
@@ -51,12 +64,45 @@ namespace StudentManagementSystem.Repository
             if (student != null)
             {
                 students.Remove(student);
+                SaveToFile();
                 return true;
             }
             return false;
         }
+
+        //Save to file
+        private void SaveToFile()
+        {
+            List<string> Lines = new List<string>();
+
+            foreach(var s in students)
+            {
+                string Line = $"{s.Id},{s.Name},{s.Age},{s.Grade},{s.Email}";
+                Lines.Add(Line);
+            }
+            File.WriteAllLines(FilePath, Lines);
+        }
+
+        //Load from file
+        private void LoadFromFile()
+        {
+            if (!File.Exists(FilePath))
+                return;
+            var Lines = File.ReadAllLines(FilePath);
+
+            foreach (var Line in Lines)
+            {
+                var data = Line.Split(',');
+                int id = int.Parse(data[0]);
+                string name = data[1];
+                int age = int.Parse(data[2]);
+                string grade = data[3];
+                string email = data[4];
+
+                students.Add(new Student(id,name, age, grade, email));
+
+            }
+        }
     }
-
-
 }
 

@@ -12,6 +12,7 @@ namespace StudentManagementSystem
 
             while (true)
             {
+                Console.Clear();
                 Console.WriteLine("\n======= STUDENT MANAGEMENT SYSTEM =======");
                 Console.WriteLine("1. Add Student");
                 Console.WriteLine("2. View Student");
@@ -21,36 +22,41 @@ namespace StudentManagementSystem
                 Console.WriteLine("6. Exit");
                 Console.WriteLine("Enter your choice: ");
 
-                int choice = int.Parse(Console.ReadLine());
+                if (! int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    Console.WriteLine("Invalid input! Please enter a number.");
+                    Pause();
+                    continue;
+                }
 
-                switch(choice)
+
+                switch (choice)
                 {
                     case 1:
-                        Console.WriteLine("Enter Id: ");
-                        int id = int.Parse(Console.ReadLine());
 
-                        Console.WriteLine("Enter Name: ");
-                        string name = Console.ReadLine();
+                        int id = ReadInt("Enter Id: ");
 
-                        Console.WriteLine("Enter Age: ");
-                        int age= int.Parse(Console.ReadLine());
+                        string name = ReadString("Enter Name: ");
 
-                        Console.WriteLine("Enter Grade: ");
-                        string grade = Console.ReadLine();
+                        int age = ReadInt("Enter Age: ");
 
-                        Console.WriteLine("Enter Email: ");
-                        string email = Console.ReadLine();
+                        string grade = ReadString("Enter Grade: ");
 
-                        Student s = new Student(id,name, age, grade, email);
-                        repo.AddStudent(s);
+                        string email = ReadString("Enter Email: ");
+
+                        repo.AddStudent(new Student(id, name, age, grade, email));
 
                         Console.WriteLine("Student added Successfully!");
+
                         break;
 
                     case 2:
                         var students = repo.GetAllStudents();
-                        Console.WriteLine("\n| ID | Name | Age | Grade | Email |");
-                        Console.WriteLine("-------------------------------------");
+
+                        Console.WriteLine("\n| ID  | Name  | Age  | Grade | Email |");
+
+                        Console.WriteLine("----------------------------------------");
+
                         foreach(var stu in students)
                         {
                             Console.WriteLine(stu);
@@ -58,56 +64,93 @@ namespace StudentManagementSystem
                         break;
 
                     case 3:
-                        Console.WriteLine("Enter Student ID: ");
-                        int searchId = int.Parse(Console.ReadLine());
+
+                        int searchId = ReadInt("Enter Student ID: ");
                         var found = repo.GetStudentById(searchId);
-                        if (found != null)
-                        {
-                            Console.WriteLine(found);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Student not found");
-                        }
+
+                        Console.WriteLine(found != null ? found.ToString() : "Student not found");
+                        
                         break;
 
                     case 4:
-                        Console.WriteLine("Enter Id to update: ");
-                        int updateId = int.Parse(Console.ReadLine());
 
-                        Console.WriteLine("New Name: ");
-                        string newName = Console.ReadLine();
+                        int updateId = ReadInt("Enter Id to update: ");
 
-                        Console.WriteLine("New Age: ");
-                        int newAge = int.Parse(Console.ReadLine());
+                        string newName = ReadString("New Name: ");
 
-                        Console.WriteLine("New Grade: ");
-                        string newGrade = Console.ReadLine();
+                        int newAge = ReadInt("New Age: ");
 
-                        Console.WriteLine("New Email: ");
-                        string newEmail = Console.ReadLine();
+                        string newGrade = ReadString("New Grade: ");
+
+                        string newEmail = ReadString("New Email: ");
 
                         bool updated = repo.UpdateStudent(updateId, newName, newAge, newEmail, newGrade);
+
                         Console.WriteLine(updated ? "Updated successfully!" : "Student not found");
 
                         break;
 
                     case 5:
-                        Console.WriteLine("Enter ID to delete: ");
-                        int deleteId = int.Parse((Console.ReadLine()));
+
+                        int deleteId = ReadInt("Enter ID to delete: ");
+
                         bool deleted = repo.DeleteStudent(deleteId);
+
                         Console.WriteLine(deleted ? "Deleted Sucessfully!" : "Student not found");
+
                         break;
 
                     case 6:
                         Console.WriteLine("Exiting...");
                         return;
+
                     default:
                         Console.WriteLine("Invalid Choice");
                         break;
                 }
+                Pause();
             }
         }
 
+        //Helper method : Read Integer
+
+        static int ReadInt(string message)
+        {
+            int value;
+            while(true)
+            {
+                Console.WriteLine(message);
+                if (int.TryParse(Console.ReadLine(), out value))
+                {
+                    return value;
+                }
+                Console.WriteLine("Invalid number, try agian");
+            }
+        }
+
+        //Helper method : Read String
+
+        static string ReadString(string message)
+        {
+            string input;
+            while(true)
+            {
+                Console.Write(message);
+                input = Console.ReadLine();
+
+                if(! string.IsNullOrWhiteSpace(input) )
+                {
+                    return input;
+                }
+                Console.WriteLine("Input cannot be empty.");
+            }
+        }
+
+        //Pause Screen
+        static void Pause()
+        {
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+        }
     }
 }

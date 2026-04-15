@@ -76,7 +76,7 @@ namespace StudentManagementSystem.Repository
         {
             List<string> Lines = new List<string>();
 
-            foreach(var s in students)
+            foreach (var s in students)
             {
                 string Line = $"{s.Id},{s.Name},{s.Age},{s.Grade},{s.Email}";
                 Lines.Add(Line);
@@ -100,17 +100,17 @@ namespace StudentManagementSystem.Repository
                 string grade = data[3];
                 string email = data[4];
 
-                students.Add(new Student(id,name, age, grade, email));
+                students.Add(new Student(id, name, age, grade, email));
 
             }
         }
 
         //Search by Name
-        public List <Student> SearchByName(string name)
+        public List<Student> SearchByName(string name)
         {
-            List<Student> result = new List<Student> ();
+            List<Student> result = new List<Student>();
 
-            foreach(var s in students)
+            foreach (var s in students)
             {
                 if (s.Name.ToLower().Contains(name.ToLower()))
                 {

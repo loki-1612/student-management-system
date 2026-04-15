@@ -1,7 +1,6 @@
 ﻿using System;
 using StudentManagementSystem.Models;
 using StudentManagementSystem.Repository;
-
 namespace StudentManagementSystem
 {
     class Program
@@ -22,7 +21,8 @@ namespace StudentManagementSystem
                 Console.WriteLine("6. Search by Name");
                 Console.WriteLine("7. Sort by Name");
                 Console.WriteLine("8. Sort by Age");
-                Console.WriteLine("9. Exit");
+                Console.WriteLine("9. Filter by Grade");
+                Console.WriteLine("10. Exit");
                 Console.WriteLine("Enter your choice: ");
 
                 if (! int.TryParse(Console.ReadLine(), out int choice))
@@ -44,8 +44,8 @@ namespace StudentManagementSystem
 
                             int age = ReadInt("Enter Age: ");
 
-                            string grade = ReadString("Enter Grade: ");
-
+                            string grade = ReadGrade("Enter Grade (A/B/C): ");
+                          
                             string email = ReadString("Enter Email: ");
 
                             repo.AddStudent(new Student(id, name, age, grade, email));
@@ -56,17 +56,8 @@ namespace StudentManagementSystem
 
                         case 2:
                             var students = repo.GetAllStudents();
+                            DisplayStudents(students);
 
-                            Console.WriteLine("\n| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
-                                "ID", "Name", "Age", "Grade", "Email");
-
-                            Console.WriteLine(new string('-', 64));
-
-                            foreach (var stu in students)
-                            {
-                                Console.WriteLine("| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
-                                    stu.Id, stu.Name ,stu.Age, stu.Grade, stu.Email);
-                            }
                             break;
 
                         case 3:
@@ -86,7 +77,7 @@ namespace StudentManagementSystem
 
                             int newAge = ReadInt("New Age: ");
 
-                            string newGrade = ReadString("New Grade: ");
+                            string newGrade = ReadGrade("Enter Grade (A/B/C): ");
 
                             string newEmail = ReadString("New Email: ");
 
@@ -150,6 +141,21 @@ namespace StudentManagementSystem
                             break;
 
                         case 9:
+                           
+                            string Grade = ReadGrade("Enter Grade (A/B/C): ");
+
+                            var filtered = repo.GetStudentByGrade(Grade);
+                            if(filtered.Count == 0)
+                            {
+                                Console.WriteLine("No students found.");
+                            }
+                            else
+                            {
+                                DisplayStudents(filtered);
+                            }
+                            break;
+
+                        case 10:
                             Console.WriteLine("Exiting...");
                             return;
 
@@ -200,6 +206,35 @@ namespace StudentManagementSystem
                 Console.WriteLine("Input cannot be empty.");
             }
         }
+
+        //Helper method : Read Grade
+        public static string ReadGrade(string prompt)
+        {
+            while (true)
+            {
+                Console.WriteLine(prompt);
+                string grade = Console.ReadLine().ToUpper().Trim();
+                if (grade == "A" || grade == "B" || grade == "C")
+                    return grade;
+                Console.WriteLine("Invalid grade! Please enter A, B, or C only.");
+            }
+        }
+
+        //Display students
+        public static void DisplayStudents(List<Student> students)
+        {
+            Console.WriteLine("\n| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
+                                "ID", "Name", "Age", "Grade", "Email");
+
+            Console.WriteLine(new string('-', 64));
+
+            foreach (var stu in students)
+            {
+                Console.WriteLine("| {0,-5}  | {1,-10}  | {2,-5}  | {3,-5} | {4,-20} |",
+                    stu.Id, stu.Name, stu.Age, stu.Grade, stu.Email);
+            }
+        }
+        
 
         //Pause Screen
         static void Pause()

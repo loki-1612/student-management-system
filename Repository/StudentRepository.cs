@@ -131,6 +131,14 @@ namespace StudentManagementSystem.Repository
         {
             return students.OrderBy(s => s.Age).ToList();
         }
+
+        //sort by grade
+        public List <Student> GetStudentByGrade(string grade)
+        {
+            return students.Where(s => s.Grade.ToUpper() == grade.ToUpper()).ToList();
+        }
+
+        
     }
 }
 

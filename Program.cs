@@ -15,7 +15,7 @@ namespace StudentManagementSystem
                 Console.WriteLine("\n======= STUDENT MANAGEMENT SYSTEM =======");
                 Console.WriteLine("1. Add Student");
                 Console.WriteLine("2. View Student");
-                Console.WriteLine("3. Find Student");
+                Console.WriteLine("3. Find Student By ID");
                 Console.WriteLine("4. Update Student");
                 Console.WriteLine("5. Delete Student");
                 Console.WriteLine("6. Search by Name");
@@ -28,7 +28,7 @@ namespace StudentManagementSystem
 
                 if (! int.TryParse(Console.ReadLine(), out int choice))
                 {
-                    Console.WriteLine("Invalid input! Please enter a number.");
+                    PrintError("Invalid input! Please enter a number.");
                     Pause();
                     continue;
                 }
@@ -42,7 +42,7 @@ namespace StudentManagementSystem
                             int id = GetValidStudentId(repo);
                             if (id == -1) return;
 
-                            string name = ReadString("Enter Name: ");
+                            string name =GetValidName("Enter Name: ");
 
                             int age = GetValidAge();
 
@@ -52,7 +52,7 @@ namespace StudentManagementSystem
 
                             repo.AddStudent(new Student(id, name, age, grade, email));
 
-                            Console.WriteLine("Student added Successfully!");
+                            PrintSuccess("Student added Successfully!");
 
                             break;
 
@@ -67,15 +67,13 @@ namespace StudentManagementSystem
                             int searchId = ReadInt("Enter Student ID: ");
                             var found = repo.GetStudentById(searchId);
 
-                            Console.WriteLine(found != null ? found.ToString() : "Student not found");
-
+                            PrintError(found != null ? found.ToString() : "Student not found");
                             break;
 
                         case 4:
+                            int updateId = GetExistingStudentId(repo);
 
-                            int updateId = GetValidStudentId(repo);
-
-                            string newName = ReadString("New Name: ");
+                            string newName = GetValidName("Enter New Name: ");
 
                             int newAge = GetValidAge();
 
@@ -83,10 +81,10 @@ namespace StudentManagementSystem
 
                             string newEmail = GetValidEmail();
 
-                            bool updated = repo.UpdateStudent(updateId, newName, newAge, newEmail, newGrade);
+                            repo.UpdateStudent(updateId, newName, newAge, newGrade, newEmail);
 
-                            Console.WriteLine(updated ? "Updated successfully!" : "Student not found");
-
+                            PrintSuccess("Student updated successfully!");
+   
                             break;
 
                         case 5:
@@ -96,35 +94,46 @@ namespace StudentManagementSystem
                             var student = repo.GetStudentById(deleteId);
                             if(student != null)
                             {
-                                Console.WriteLine("Are you sure you want to delete? (Y/N): ");
+                                PrintWarning("Are you sure you want to delete? (Y/N): ");
                                 string ?confirm = Console.ReadLine();
 
                                 if (confirm?.ToUpper() == "Y")
                                 {
                                     repo.DeleteStudent(deleteId);
-                                    Console.WriteLine("Student deleted successfully.");
+                                    PrintSuccess("Student deleted successfully.");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Delete cancelled.");
+                                    PrintWarning("Delete cancelled.");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("Student not found");
+                                
+                                PrintError("Student not found");
+                         
+
                             }
 
                             break;
 
                         case 6:
-                            string SearchName = ReadString("Enter name to search: ");
-                            var results = repo.SearchByName(SearchName);
+                            string searchName = GetValidName("Enter name to search: ");
+                            var results = repo.SearchByName(searchName);
 
-                            foreach (var s in results)
+                            if (results.Count == 0)
                             {
-                                Console.WriteLine(s);
+                               
+                               PrintError("Student not found");
+                               
                             }
+                            else
+                            {
+                                DisplayStudents(results); 
+                            }
+
                             break;
+
 
                         case 7:
                             var SortedByName = repo.SortByName();
@@ -149,7 +158,7 @@ namespace StudentManagementSystem
                             var filtered = repo.GetStudentByGrade(Grade);
                             if(filtered.Count == 0)
                             {
-                                Console.WriteLine("No students found.");
+                                PrintError("No students found.");
                             }
                             else
                             {
@@ -160,22 +169,22 @@ namespace StudentManagementSystem
                         case 10:
                             string path = "students.csv";
                             repo.ExportToCsv(path);
-                            Console.WriteLine("Data exported to students.csv");
+                            PrintSuccess("Data exported to students.csv");
                             break;
 
                         case 11:
-                            Console.WriteLine("Exiting...");
+                            PrintWarning("Exiting...");
                             return;
 
 
                         default:
-                            Console.WriteLine("Invalid Choice");
+                            PrintError("Invalid Choice");
                             break;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Something went wrong: " + ex.Message);
+                    PrintError("Something went wrong: " + ex.Message);
                 }
 
                 Pause();
@@ -194,24 +203,23 @@ namespace StudentManagementSystem
                 {
                     return value;
                 }
-                Console.WriteLine("Invalid number, try agian");
+                PrintError("Invalid number, try agian");
             }
         }
 
         //Helper method : Read String
-        static string ReadString(string message)
+        public static string ReadString(string message)
         {
-            string input;
             while(true)
             {
                 Console.Write(message);
-                input = Console.ReadLine();
+                string? input = Console.ReadLine();
 
                 if(! string.IsNullOrWhiteSpace(input) )
                 {
                     return input;
                 }
-                Console.WriteLine("Input cannot be empty.");
+                PrintWarning("Input cannot be empty.");
             }
         }
 
@@ -220,7 +228,7 @@ namespace StudentManagementSystem
         {
             if (students.Count == 0)
             {
-                Console.WriteLine("No students found.");
+                PrintError("No students found.");
                 return;
             }
 
@@ -275,7 +283,7 @@ namespace StudentManagementSystem
 
                 if (grade == "A" || grade == "B" || grade == "C")
                     return grade;
-                Console.WriteLine("Invalid grade! Please enter A, B, or C only.");
+                PrintError("Invalid grade! Please enter A, B, or C only.");
             }
         }
 
@@ -287,15 +295,40 @@ namespace StudentManagementSystem
                 Console.Write("Enter Id: ");
                 if (!int.TryParse(Console.ReadLine(), out int id))
                 {
-                    Console.WriteLine("Invalid number. Try again.");
+                    PrintError("Invalid number. Try again.");
                     continue;
                 }
                 if (repo.StudentExists(id))
                 {
-                    Console.WriteLine("Id already exists. Try different ID.");
+                    PrintWarning("Id already exists. Try different ID.");
                 }
                 return id;
        
+            }
+        }
+
+        //valid name
+        public static string GetValidName(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+                string? name = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    PrintError("Name cannot be empty.");
+                    continue;
+                }
+
+                // Check if name contains only letters and spaces
+                if (!name.All(c => char.IsLetter(c) || c == ' '))
+                {
+                    PrintError("Name must contain only letters.");
+                    continue;
+                }
+
+                return name.Trim();
             }
         }
 
@@ -309,7 +342,7 @@ namespace StudentManagementSystem
 
                 if (!int.TryParse(Console.ReadLine(), out int age))
                 {
-                    Console.WriteLine("Invalid number. Try again.");
+                    PrintError("Invalid number. Try again.");
                     continue;
                 }
 
@@ -319,7 +352,7 @@ namespace StudentManagementSystem
                     return age;
                 }
 
-                Console.WriteLine("Age must be between 12 and 25.");
+                PrintError("Age must be between 12 and 25.");
             }
         }
 
@@ -339,7 +372,32 @@ namespace StudentManagementSystem
                     return email;
                 }
 
-                Console.WriteLine("❌ Invalid email format. Try again.");
+                PrintError("Invalid email format. Try again.");
+            }
+        }
+
+        //Update by checking existing Id
+        public static int GetExistingStudentId(StudentRepository repo)
+        {
+            while (true)
+            {
+                Console.Write("Enter Student ID to update: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int id))
+                {
+                    PrintError("Invalid ID. Try again.");
+                    continue;
+                }
+
+                var student = repo.GetStudentById(id);
+
+                if (student == null)
+                {
+                    PrintError(" Student not found. Enter valid ID.");
+                    continue;
+                }
+
+                return id;
             }
         }
 
@@ -347,8 +405,31 @@ namespace StudentManagementSystem
         //Pause Screen
         static void Pause()
         {
-            Console.WriteLine("\nPress any key to continue...");
+            PrintWarning("\nPress any key to continue...");
             Console.ReadKey();
+        }
+        //success color
+        public static void PrintSuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan; // not green
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        //Error color
+        public static void PrintError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        //warning color
+        public static void PrintWarning(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
     }
 }

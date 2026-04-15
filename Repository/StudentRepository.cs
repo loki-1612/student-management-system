@@ -44,15 +44,15 @@ namespace StudentManagementSystem.Repository
             return null;
         }
 
-        public bool UpdateStudent(int id, string name, int age, string email, string grade)
+        public bool UpdateStudent(int id, string name, int age, string grade, string email)
         {
             var student = GetStudentById(id);
             if (student != null)
             {
                 student.Name = name;
                 student.Age = age;
-                student.Email = email;
                 student.Grade = grade;
+                student.Email = email;
                 SaveToFile();
                 return true;
             }

@@ -20,6 +20,9 @@ namespace StudentManagementSystem
                 Console.WriteLine("4. Update Student");
                 Console.WriteLine("5. Delete Student");
                 Console.WriteLine("6. Exit");
+                Console.WriteLine("7. Search by Name");
+                Console.WriteLine("8. Sort by Name");
+                Console.WriteLine("9. Sort by Age");
                 Console.WriteLine("Enter your choice: ");
 
                 if (! int.TryParse(Console.ReadLine(), out int choice))
@@ -29,85 +32,119 @@ namespace StudentManagementSystem
                     continue;
                 }
 
-
-                switch (choice)
+                try
                 {
-                    case 1:
+                    switch (choice)
+                    {
+                        case 1:
 
-                        int id = ReadInt("Enter Id: ");
+                            int id = ReadInt("Enter Id: ");
 
-                        string name = ReadString("Enter Name: ");
+                            string name = ReadString("Enter Name: ");
 
-                        int age = ReadInt("Enter Age: ");
+                            int age = ReadInt("Enter Age: ");
 
-                        string grade = ReadString("Enter Grade: ");
+                            string grade = ReadString("Enter Grade: ");
 
-                        string email = ReadString("Enter Email: ");
+                            string email = ReadString("Enter Email: ");
 
-                        repo.AddStudent(new Student(id, name, age, grade, email));
+                            repo.AddStudent(new Student(id, name, age, grade, email));
 
-                        Console.WriteLine("Student added Successfully!");
+                            Console.WriteLine("Student added Successfully!");
 
-                        break;
+                            break;
 
-                    case 2:
-                        var students = repo.GetAllStudents();
+                        case 2:
+                            var students = repo.GetAllStudents();
 
-                        Console.WriteLine("\n| ID  | Name  | Age  | Grade | Email |");
+                            Console.WriteLine("\n| ID  | Name  | Age  | Grade | Email |");
 
-                        Console.WriteLine("----------------------------------------");
+                            Console.WriteLine("----------------------------------------");
 
-                        foreach(var stu in students)
-                        {
-                            Console.WriteLine(stu);
-                        }
-                        break;
+                            foreach (var stu in students)
+                            {
+                                Console.WriteLine(stu);
+                            }
+                            break;
 
-                    case 3:
+                        case 3:
 
-                        int searchId = ReadInt("Enter Student ID: ");
-                        var found = repo.GetStudentById(searchId);
+                            int searchId = ReadInt("Enter Student ID: ");
+                            var found = repo.GetStudentById(searchId);
 
-                        Console.WriteLine(found != null ? found.ToString() : "Student not found");
-                        
-                        break;
+                            Console.WriteLine(found != null ? found.ToString() : "Student not found");
 
-                    case 4:
+                            break;
 
-                        int updateId = ReadInt("Enter Id to update: ");
+                        case 4:
 
-                        string newName = ReadString("New Name: ");
+                            int updateId = ReadInt("Enter Id to update: ");
 
-                        int newAge = ReadInt("New Age: ");
+                            string newName = ReadString("New Name: ");
 
-                        string newGrade = ReadString("New Grade: ");
+                            int newAge = ReadInt("New Age: ");
 
-                        string newEmail = ReadString("New Email: ");
+                            string newGrade = ReadString("New Grade: ");
 
-                        bool updated = repo.UpdateStudent(updateId, newName, newAge, newEmail, newGrade);
+                            string newEmail = ReadString("New Email: ");
 
-                        Console.WriteLine(updated ? "Updated successfully!" : "Student not found");
+                            bool updated = repo.UpdateStudent(updateId, newName, newAge, newEmail, newGrade);
 
-                        break;
+                            Console.WriteLine(updated ? "Updated successfully!" : "Student not found");
 
-                    case 5:
+                            break;
 
-                        int deleteId = ReadInt("Enter ID to delete: ");
+                        case 5:
 
-                        bool deleted = repo.DeleteStudent(deleteId);
+                            int deleteId = ReadInt("Enter ID to delete: ");
 
-                        Console.WriteLine(deleted ? "Deleted Sucessfully!" : "Student not found");
+                            bool deleted = repo.DeleteStudent(deleteId);
 
-                        break;
+                            Console.WriteLine(deleted ? "Deleted Sucessfully!" : "Student not found");
 
-                    case 6:
-                        Console.WriteLine("Exiting...");
-                        return;
+                            break;
 
-                    default:
-                        Console.WriteLine("Invalid Choice");
-                        break;
+                        case 6:
+                            Console.WriteLine("Exiting...");
+                            return;
+
+                        case 7:
+                            string SearchName = ReadString("Enter name to search: ");
+                            var results = repo.SearchByName(SearchName);
+
+                            foreach (var s in results)
+                            {
+                                Console.WriteLine(s);
+                            }
+                            break;
+
+                        case 8:
+                            var SortedByName = repo.SortByName();
+                            foreach (var s in SortedByName)
+                            {
+                                Console.WriteLine(s);
+                            }
+                            break;
+
+                        case 9:
+                            var SortedByAge = repo.SortByAge();
+                            foreach (var s in SortedByAge)
+                            {
+                                Console.WriteLine(s);
+                            }
+                            break;
+
+
+                        default:
+                            Console.WriteLine("Invalid Choice");
+                            break;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Something went wrong: " + ex.Message);
+                }
+
                 Pause();
             }
         }
@@ -129,7 +166,6 @@ namespace StudentManagementSystem
         }
 
         //Helper method : Read String
-
         static string ReadString(string message)
         {
             string input;

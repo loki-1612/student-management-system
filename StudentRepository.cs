@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using StudentManagementSystem.Models;
 
 
@@ -102,6 +103,33 @@ namespace StudentManagementSystem.Repository
                 students.Add(new Student(id,name, age, grade, email));
 
             }
+        }
+
+        //Search by Name
+        public List <Student> SearchByName(string name)
+        {
+            List<Student> result = new List<Student> ();
+
+            foreach(var s in students)
+            {
+                if (s.Name.ToLower().Contains(name.ToLower()))
+                {
+                    result.Add(s);
+                }
+            }
+            return result;
+        }
+
+        //sort by name
+        public List<Student> SortByName()
+        {
+            return students.OrderBy(s => s.Name).ToList();
+        }
+
+        //sort by age
+        public List<Student> SortByAge()
+        {
+            return students.OrderBy(s => s.Age).ToList();
         }
     }
 }
